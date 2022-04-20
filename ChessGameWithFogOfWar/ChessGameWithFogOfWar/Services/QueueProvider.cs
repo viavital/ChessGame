@@ -8,7 +8,6 @@ namespace ChessGameWithFogOfWar.Services
 
         private Queue<Player> BlackPlayersQueue = new() ;
 
-
         public void Enqueue(Player player, ColorOfTeamEnum colorOfTeam)
         {
             if (colorOfTeam == ColorOfTeamEnum.White)
@@ -34,5 +33,8 @@ namespace ChessGameWithFogOfWar.Services
 
         public int CountWhite => WhitePlayersQueue.Count;
         public int CountBlack => BlackPlayersQueue.Count;
+
+        public Player PeekedWhite => WhitePlayersQueue.Peek();
+        public Player PeekedBlack => BlackPlayersQueue.Peek();
     }
 }
