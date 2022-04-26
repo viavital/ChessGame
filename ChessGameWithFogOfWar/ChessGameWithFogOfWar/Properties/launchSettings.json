@@ -12,7 +12,7 @@
     "ChessGameWithFogOfWar": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "api/GameQueue",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

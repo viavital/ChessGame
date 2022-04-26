@@ -32,27 +32,29 @@ namespace ChessGameWithFogOfWar.Controllers
 
         //POST api/<GameQueueController>
         [HttpPost]
-        public HttpStatusCode Post([FromBody] string value)
+        public IActionResult Post([FromBody] string value)
         {
             // example "{\"Player\":{\"Name\":\"John\"},\"PlayersColor\":{\"Color\":\"White\"}}"
             var ReceivedPlayersData = JsonConvert.DeserializeObject<ReceivedPostData>(value);
             if (ReceivedPlayersData == null)
             {
-                return HttpStatusCode.BadRequest;
+                return new BadRequestResult();
             }
-            _queueProvider.Enqueue(ReceivedPlayersData.Player, ReceivedPlayersData.PlayersColor.ReturnColorEnum());
+            var addedPlayer = _queueProvider.Enqueue(ReceivedPlayersData.Player, ReceivedPlayersData.PlayersColor.ReturnColorEnum());
             if (_queueProvider.Contains(ReceivedPlayersData.Player))
             {
-                return HttpStatusCode.Accepted;
+                return new JsonResult(addedPlayer);
             }
-            return HttpStatusCode.Conflict;
+            return new BadRequestResult();
         }
 
 
-        // DELETE api/<GameQueueController>/5
-        [HttpDelete("{name}")]
-        public void Delete(int id)
+        // DELETE api/<GameQueueController>/
+        [HttpDelete("{Id}")]
+        public IActionResult Delete(string Id)
         {
+          var response =  _queueProvider.DeletePlayerFromQueue(Id);
+            return new JsonResult(response);
         }
 
         public void CheckIsRivalsКCompleted()
@@ -60,20 +62,20 @@ namespace ChessGameWithFogOfWar.Controllers
             Player PotentialTrailor = null;
             if (_queueProvider.CountWhite > 1 && _queueProvider.CountBlack == 0)
             {
-                PotentialTrailor = _queueProvider.PeekedWhite;               
+                PotentialTrailor = _queueProvider.PeekedWhite;
             }
             if (_queueProvider.CountBlack > 1 && _queueProvider.CountWhite == 0)
             {
-                PotentialTrailor = _queueProvider.PeekedBlack;                
+                PotentialTrailor = _queueProvider.PeekedBlack;
             }
             if (PotentialTrailor != null)
             {
-                SendChangingColorProposal(PotentialTrailor); // todo
+                //  SendChangingColorProposal(PotentialTrailor); // todo
             }
             if (_queueProvider.CountWhite > 0 && _queueProvider.CountBlack > 0)
             {
-              var CompletedRivals = _queueProvider.Dequeue();
-                RedirectToGameProcessController(CompletedRivals); // todo
+                var CompletedRivals = _queueProvider.Dequeue();
+                //  RedirectToGameProcessController(CompletedRivals); // todo
             }
         }
     }
