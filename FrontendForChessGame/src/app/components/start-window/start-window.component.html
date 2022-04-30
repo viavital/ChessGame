@@ -1,0 +1,29 @@
+<div class="enterDataPlayer">
+
+  <form>
+
+    <div class="enterName">
+      <input type="text" id="nickname" name="nickname" [(ngModel)]="username" placeholder="Enter your nickname">
+    </div>
+
+    <div class="colorSelection">
+      <mat-radio-group [(ngModel)]="color" name="color">
+        <mat-radio-button type="radio-button" 
+          value="white" class="button">WHITE
+        </mat-radio-button>
+        <mat-radio-button type="radio-button" 
+          value="black" class="button">BLACK
+        </mat-radio-button>
+        <mat-radio-button type="radio-button" 
+          value="random" class="button">RANDOM COLOR
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div class="startGame">
+      <button mat-button type="button" (click)="dataPlayers()">START GAME</button>
+    </div>
+
+  </form>
+
+</div>

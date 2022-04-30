@@ -1,0 +1,52 @@
+:host {
+    display: flex;
+    backdrop-filter: blur(3px);
+}
+.enterDataPlayer {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+    position: relative;
+    left: 30%;
+
+    form {
+        background-color: rgba(26, 25, 24, 0.75);
+        position: relative;
+        top: 125px;
+
+        .enterName {
+            display: flex;
+            margin-top: 30px;
+            height: 40px;
+            flex-flow: row wrap;
+            align-items: center;
+            flex-direction: column;
+            #nickname {
+                width: 250px;
+                height: 25px;
+            }
+        }
+
+        .button {
+            margin: 15px;
+            width: 200px;
+            background-color: rgb(207, 202, 202);
+            text-align: left;
+        }
+        .colorSelection {
+            display: flex;
+            flex-direction: column;
+            margin: 15px;
+        }
+
+        .startGame {
+            display: flex;
+            margin-bottom: 30px;
+            flex-flow: row wrap;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgb(207, 202, 202);
+        }
+    }
+}

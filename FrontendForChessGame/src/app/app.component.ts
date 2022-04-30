@@ -1,11 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { NewUsersDataService } from './services/new-users-data.service';
+
 
 @Component({
   selector: 'app-root',
-  template: `<div>
-    <router-outlet></router-outlet>
-  </div>`
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'FrontendForChessGame';
+  constructor() {
+    
+  }
+  ngOnInit(): void {
+    
+  }
+  
 }
