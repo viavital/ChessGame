@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChessGameWithFogOfWar.Services;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Newtonsoft.Json;
+using ChessGameWithFogOfWar.Model;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,6 +12,12 @@ namespace ChessGameWithFogOfWar.Controllers
     [ApiController]
     public class GameQueueController : ControllerBase
     {
+       private readonly QueueProvider _queueProvider;
+        public GameQueueController(QueueProvider queueProveder)
+        {
+            this._queueProvider = queueProveder;     
+        }
+
         // GET: api/<GameQueueController>
         [HttpGet]
         public ContentResult Get()
@@ -21,29 +30,53 @@ namespace ChessGameWithFogOfWar.Controllers
             };           
         }
 
-        // GET api/<GameQueueController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<GameQueueController>
+        //POST api/<GameQueueController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] string value)
         {
+            // example "{\"Player\":{\"Name\":\"John\"},\"PlayersColor\":{\"Color\":\"White\"}}"
+            var ReceivedPlayersData = JsonConvert.DeserializeObject<ReceivedPostData>(value);
+            if (ReceivedPlayersData == null)
+            {
+                return new BadRequestResult();
+            }
+            var addedPlayer = _queueProvider.Enqueue(ReceivedPlayersData.Player, ReceivedPlayersData.PlayersColor.ReturnColorEnum());
+            if (_queueProvider.Contains(ReceivedPlayersData.Player))
+            {
+                return new JsonResult(addedPlayer);
+            }
+            return new BadRequestResult();
         }
 
-        // PUT api/<GameQueueController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+
+        // DELETE api/<GameQueueController>/
+        [HttpDelete("{Id}")]
+        public IActionResult Delete(string Id)
         {
+          var response =  _queueProvider.DeletePlayerFromQueue(Id);
+            return new JsonResult(response);
         }
 
-        // DELETE api/<GameQueueController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void CheckIsRivalsКCompleted()
         {
+            Player PotentialTrailor = null;
+            if (_queueProvider.CountWhite > 1 && _queueProvider.CountBlack == 0)
+            {
+                PotentialTrailor = _queueProvider.PeekedWhite;
+            }
+            if (_queueProvider.CountBlack > 1 && _queueProvider.CountWhite == 0)
+            {
+                PotentialTrailor = _queueProvider.PeekedBlack;
+            }
+            if (PotentialTrailor != null)
+            {
+                //  SendChangingColorProposal(PotentialTrailor); // todo
+            }
+            if (_queueProvider.CountWhite > 0 && _queueProvider.CountBlack > 0)
+            {
+                var CompletedRivals = _queueProvider.Dequeue();
+                //  RedirectToGameProcessController(CompletedRivals); // todo
+            }
         }
     }
 }
