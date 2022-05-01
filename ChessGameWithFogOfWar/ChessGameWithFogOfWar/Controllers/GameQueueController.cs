@@ -1,8 +1,7 @@
 ﻿using ChessGameWithFogOfWar.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using Newtonsoft.Json;
 using ChessGameWithFogOfWar.Model;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
