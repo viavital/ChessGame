@@ -32,16 +32,16 @@ namespace ChessGameWithFogOfWar.Controllers
 
         //POST api/<GameQueueController>
         [HttpPost]
-        public IActionResult Post([FromBody] string value)
+        public IActionResult Post([FromBody] ReceivedPostData value)
         {
-            // example "{\"Player\":{\"Name\":\"John\"},\"PlayersColor\":{\"Color\":\"White\"}}"
-            var ReceivedPlayersData = JsonConvert.DeserializeObject<ReceivedPostData>(value);
-            if (ReceivedPlayersData == null)
+            //example "{\"player\":{\"name\":\"john\"},\"playersColor\":{\"color\":\"white\"}}"
+           // var ReceivedPlayersData = JsonConvert.DeserializeObject<ReceivedPostData>(value);
+            if (value == null)
             {
                 return new BadRequestResult();
             }
-            var addedPlayer = _queueProvider.Enqueue(ReceivedPlayersData.Player, ReceivedPlayersData.PlayersColor.ReturnColorEnum());
-            if (_queueProvider.Contains(ReceivedPlayersData.Player))
+            var addedPlayer = _queueProvider.Enqueue(value.Player, value.playersColor.ReturnColorEnum());
+            if (_queueProvider.Contains(value.Player))
             {
                 return new JsonResult(addedPlayer);
             }
@@ -56,7 +56,7 @@ namespace ChessGameWithFogOfWar.Controllers
           var response =  _queueProvider.DeletePlayerFromQueue(Id);
             return new JsonResult(response);
         }
-
+        [ApiExplorerSettings(IgnoreApi = true)]
         public void CheckIsRivalsКCompleted()
         {
             Player PotentialTrailor = null;

@@ -22,7 +22,7 @@ namespace ChessGameWithFogOfWar.Services
                 else
                 {
                     BlackPlayersQueue.Enqueue(player);
-                    return WhitePlayersQueue.Peek();
+                    return BlackPlayersQueue.Peek();
                 }
             }
         }

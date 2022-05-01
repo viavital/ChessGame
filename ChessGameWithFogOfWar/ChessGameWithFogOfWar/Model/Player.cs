@@ -1,9 +1,14 @@
-﻿namespace ChessGameWithFogOfWar.Model
+﻿using Newtonsoft.Json;
+
+namespace ChessGameWithFogOfWar.Model
 {
     public class ReceivedPostData
     {
+        [JsonProperty ("player")]
         public Player Player { get; set; }
-        public PlayersColor PlayersColor { get; set; }
+
+        [JsonProperty("playersColor")]
+        public PlayersColor playersColor { get; set; }
     }
     public class Player
     {
@@ -12,7 +17,9 @@
             Guid _guid = Guid.NewGuid();
             Id = _guid;
         }
+        [JsonProperty("id")]
         public Guid Id { get; set; }
+        [JsonProperty("name")]
         public string Name { get; set; }        
     }
     public class PlayersColor
@@ -27,6 +34,5 @@
             }
             return ColorOfTeamEnum.Black;
         }
-
     }
 }

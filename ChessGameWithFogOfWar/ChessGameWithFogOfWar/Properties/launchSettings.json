@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
-    "windowsAuthentication": true,
-    "anonymousAuthentication": false,
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:16031",
       "sslPort": 0
@@ -12,7 +12,7 @@
     "ChessGameWithFogOfWar": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/GameQueue",
+      "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
