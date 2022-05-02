@@ -1,5 +1,7 @@
+using ChessGameWithFogOfWar.Hubs;
 using ChessGameWithFogOfWar.Services;
 using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Http.Connections;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,15 +13,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<QueueProvider>();
-
-
-builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
-   .AddNegotiate();
-
-builder.Services.AddAuthorization(options =>
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
 {
-    // By default, all incoming requests will be authorized according to the default policy.
-    options.FallbackPolicy = options.DefaultPolicy;
+    options.AddPolicy("Cors",
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:4200")
+                                                  .AllowAnyHeader()
+                                                  .AllowAnyMethod();
+                          });
 });
 
 var app = builder.Build();
@@ -31,9 +34,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseAuthentication();
-//app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapHub<GameProcessHub>("/GameProcessHub" , options =>
+{
+    options.Transports = HttpTransportType.LongPolling | HttpTransportType.WebSockets;
+});
 app.Run();
