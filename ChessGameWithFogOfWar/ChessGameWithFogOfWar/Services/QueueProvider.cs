@@ -19,11 +19,8 @@ namespace ChessGameWithFogOfWar.Services
                     WhitePlayersQueue.Enqueue(player);
                     return WhitePlayersQueue.Peek();
                 }
-                else
-                {
                     BlackPlayersQueue.Enqueue(player);
                     return BlackPlayersQueue.Peek();
-                }
             }
         }
         public Player[] Dequeue()

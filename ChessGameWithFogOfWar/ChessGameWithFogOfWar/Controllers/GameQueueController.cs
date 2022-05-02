@@ -33,16 +33,16 @@ namespace ChessGameWithFogOfWar.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] ReceivedPostData value)
         {
-            //example "{\"player\":{\"name\":\"john\"},\"playersColor\":{\"color\":\"white\"}}"
-           // var ReceivedPlayersData = JsonConvert.DeserializeObject<ReceivedPostData>(value);
+            //example "{\"player\":{\"name\":\"john\"},\"playersColor\":{\"color\":\"random\"}}"
             if (value == null)
             {
                 return new BadRequestResult();
             }
-            var addedPlayer = _queueProvider.Enqueue(value.Player, value.playersColor.ReturnColorEnum());
+            ColorOfTeamEnum playersColor = value.playersColor.ReturnColorEnum();
+            var addedPlayer = _queueProvider.Enqueue(value.Player, playersColor);
             if (_queueProvider.Contains(value.Player))
             {
-                return new JsonResult(addedPlayer);
+                return new JsonResult(new ReceivedPostData (addedPlayer, playersColor));
             }
             return new BadRequestResult();
         }
@@ -54,28 +54,6 @@ namespace ChessGameWithFogOfWar.Controllers
         {
           var response =  _queueProvider.DeletePlayerFromQueue(Id);
             return new JsonResult(response);
-        }
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public void CheckIsRivalsКCompleted()
-        {
-            Player PotentialTrailor = null;
-            if (_queueProvider.CountWhite > 1 && _queueProvider.CountBlack == 0)
-            {
-                PotentialTrailor = _queueProvider.PeekedWhite;
-            }
-            if (_queueProvider.CountBlack > 1 && _queueProvider.CountWhite == 0)
-            {
-                PotentialTrailor = _queueProvider.PeekedBlack;
-            }
-            if (PotentialTrailor != null)
-            {
-                //  SendChangingColorProposal(PotentialTrailor); // todo
-            }
-            if (_queueProvider.CountWhite > 0 && _queueProvider.CountBlack > 0)
-            {
-                var CompletedRivals = _queueProvider.Dequeue();
-                //  RedirectToGameProcessController(CompletedRivals); // todo
-            }
         }
     }
 }

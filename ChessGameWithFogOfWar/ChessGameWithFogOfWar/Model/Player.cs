@@ -4,6 +4,16 @@ namespace ChessGameWithFogOfWar.Model
 {
     public class ReceivedPostData
     {
+       
+        public ReceivedPostData(Player player,  ColorOfTeamEnum colorOfTeam)
+        {
+            this.Player = player;
+            this.playersColor = new PlayersColor() { Color = colorOfTeam.ToString() };
+        }
+        public ReceivedPostData()
+        {
+
+        }
         [JsonProperty ("player")]
         public Player Player { get; set; }
 
@@ -31,6 +41,17 @@ namespace ChessGameWithFogOfWar.Model
             if (Color == "White" || Color == "white" )
             {
                 return ColorOfTeamEnum.White;
+            }
+            else if (Color == "random")
+            {
+                    Random random = new Random();
+                    var randomColorOfTeam = random.Next(0, 1);
+                    if (randomColorOfTeam == 0)
+                    {
+                        return ColorOfTeamEnum.White;
+                    }
+                    else
+                        return ColorOfTeamEnum.Black;
             }
             return ColorOfTeamEnum.Black;
         }
