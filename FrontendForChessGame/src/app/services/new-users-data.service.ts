@@ -10,7 +10,7 @@ export class NewUsersDataService {
 
   public dataPleyers(color: string, username: string) {
     const data = `{\"Player\":{\"Name\":\"${username}\"},\"PlayersColor\":{\"Color\":\"${color}\"}}`;
-    this.http.post('http://localhost:4200/', data);
-    
+    return this.http.post('http://localhost:5069/api/GameQueue/', data);
+
   }
 }

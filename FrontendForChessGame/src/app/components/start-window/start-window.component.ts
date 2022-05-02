@@ -9,13 +9,16 @@ import { NewUsersDataService } from 'src/app/services/new-users-data.service';
 export class StartWindowComponent implements OnInit {
   color: string = '';
   username: string = '';
-  constructor(private http: NewUsersDataService) { }
+  constructor(private userData: NewUsersDataService) { }
 
   ngOnInit(): void {
     // NewUsersDataService.dataPleyers();
   }
 
   dataPlayers() {
-    console.log(this.username, this.color)
+    console.log(this.username, this.color);
+    this.userData.dataPleyers(this.color, this.username).subscribe((res)=>{
+      console.log(res);
+    });
   }
 }

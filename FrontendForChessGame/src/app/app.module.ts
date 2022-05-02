@@ -10,12 +10,14 @@ import { StartWindowComponent } from './components/start-window/start-window.com
 import { AppRoutingModule } from './app-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { ChessBoardComponent } from './components/chess-board/chess-board.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    StartWindowComponent
+    StartWindowComponent,
+    ChessBoardComponent
   ],
   imports: [
     BrowserModule,

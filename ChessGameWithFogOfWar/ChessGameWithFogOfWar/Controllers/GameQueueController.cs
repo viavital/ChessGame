@@ -57,6 +57,7 @@ namespace ChessGameWithFogOfWar.Controllers
             return new JsonResult(response);
         }
 
+        [ApiExplorerSettings(IgnoreApi = true)]
         public void CheckIsRivalsКCompleted()
         {
             Player PotentialTrailor = null;
