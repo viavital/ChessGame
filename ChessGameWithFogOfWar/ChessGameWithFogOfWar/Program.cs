@@ -2,6 +2,7 @@ using ChessGameWithFogOfWar.Hubs;
 using ChessGameWithFogOfWar.Services;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,4 +41,16 @@ app.MapHub<GameProcessHub>("/GameProcessHub" , options =>
 {
     options.Transports = HttpTransportType.LongPolling | HttpTransportType.WebSockets;
 });
+app.Use(async (context, next) =>
+{
+    var hubContext = context.RequestServices
+                            .GetRequiredService<IHubContext<GameProcessHub>>();
+    //...
+
+    if (next != null)
+    {
+        await next.Invoke();
+    }
+});
+
 app.Run();

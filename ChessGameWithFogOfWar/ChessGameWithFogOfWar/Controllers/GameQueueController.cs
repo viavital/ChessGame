@@ -42,7 +42,7 @@ namespace ChessGameWithFogOfWar.Controllers
             var addedPlayer = _queueProvider.Enqueue(value.Player, playersColor);
             if (_queueProvider.Contains(value.Player))
             {
-                return new JsonResult(new ReceivedPostData (addedPlayer, playersColor));
+                return new JsonResult(new ReceivedPostData (value.Player, playersColor));
             }
             return new BadRequestResult();
         }
