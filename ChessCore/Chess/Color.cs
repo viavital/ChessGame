@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChessCore
 {
-    enum Color
+   public enum Color
     {
         none,
         white,

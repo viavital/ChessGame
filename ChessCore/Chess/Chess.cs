@@ -36,7 +36,10 @@
             Figure figure = Board.GetFigureAt(square);
             return figure == Figure.none ? '.' : (char)figure;
         }
-
+        public Color ReturnMoveColor()
+        {
+            return Board.MoveColor;
+        }
         void FindAllMoves()
         {
             AllMoves = new List<FigureMoving>();

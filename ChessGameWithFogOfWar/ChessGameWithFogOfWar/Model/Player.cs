@@ -30,7 +30,9 @@ namespace ChessGameWithFogOfWar.Model
         [JsonProperty("id")]
         public Guid Id { get; set; }
         [JsonProperty("name")]
-        public string Name { get; set; }        
+        public string Name { get; set; }
+        public string IdConnection { get; set; }
+
     }
     public class PlayersColor
     {
