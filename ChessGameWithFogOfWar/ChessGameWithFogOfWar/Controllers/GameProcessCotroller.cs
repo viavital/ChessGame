@@ -2,6 +2,7 @@
 using ChessGameWithFogOfWar.Hubs;
 using ChessGameWithFogOfWar.Model;
 using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 
 namespace ChessGameWithFogOfWar.Controllers
 {
@@ -9,34 +10,41 @@ namespace ChessGameWithFogOfWar.Controllers
     {
         private readonly IHubContext<GameProcessHub> _hubContext;
 
-        private readonly Rivals _rivals;
-        private Chess _chess;
+        private List<Chess> _chess;
         TaskCompletionSource tcs = new TaskCompletionSource();
 
-        public GameProcessCotroller(IHubContext<GameProcessHub> hubContext, Rivals rivals)
+        public GameProcessCotroller(IHubContext<GameProcessHub> hubContext)
         {
             _hubContext = hubContext;
-            _rivals = rivals;
-            _chess = new Chess();
+            _chess = new List<Chess>();
         }
-        public async Task OnMove(string move)
+        public async Task OnMove(string moveByGameId) // { "gameid" : "**********", "move" : "Pb2b4" }
         {
-            if (move == "" || move == null)
-                return;
-            await Task.Run(() => { _chess = _chess.Move(move); });
+            MoveByGameId _moveByGameId = JsonConvert.DeserializeObject<MoveByGameId>(moveByGameId);
 
+            if (_moveByGameId.Move == "" || _moveByGameId.Move == null)
+                return;
+            var requiredChess = _chess.FirstOrDefault(c => c.GameId == _moveByGameId.GameId);
+            if (requiredChess == null)
+                return;
+
+            await Task.Run(() => {requiredChess = requiredChess.Move(_moveByGameId.Move); });
             tcs.TrySetResult();
         }
-        public async Task StartGame ()
+        public async Task StartGame (Rivals _rivals)
         {
+            Chess chess = new Chess(_rivals.GameId);
+            await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(_rivals.GameId);
+            await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync(_rivals.GameId); 
+
             while (true)
             {
-                await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(_chess.Fen);
-                await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync(_chess.Fen);
+                await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(chess.Fen); 
+                await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync(chess.Fen); 
 
-                foreach (var moves in _chess.GetAllMoves())
+                foreach (var moves in chess.GetAllMoves())
                 {
-                    if (_chess.ReturnMoveColor() == Color.white)
+                    if (chess.ReturnMoveColor() == Color.white)
                     {
                         await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(moves);
                     }
@@ -48,6 +56,5 @@ namespace ChessGameWithFogOfWar.Controllers
                 await tcs.Task;
             }           
         }
-
     }
 }

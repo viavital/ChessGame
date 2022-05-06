@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Newtonsoft.Json;
 
 namespace ChessGameWithFogOfWar.Model
 {
     public class ReceivedPostData
     {
-       
         public ReceivedPostData(Player player,  ColorOfTeamEnum colorOfTeam)
         {
             this.Player = player;
@@ -26,13 +27,14 @@ namespace ChessGameWithFogOfWar.Model
         {
             Guid _guid = Guid.NewGuid();
             Id = _guid;
+            IdConnection = null;
         }
         [JsonProperty("id")]
         public Guid Id { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
+        [ValidateNever]
         public string IdConnection { get; set; }
-
     }
     public class PlayersColor
     {

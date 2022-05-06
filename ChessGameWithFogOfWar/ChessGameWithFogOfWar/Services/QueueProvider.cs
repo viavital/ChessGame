@@ -23,15 +23,17 @@ namespace ChessGameWithFogOfWar.Services
                     return BlackPlayersQueue.Peek();
             }
         }
-        public Player[] Dequeue()
+        public Rivals Dequeue()
         {
             lock (_queueLockObj)
             {
-                var WhitePlayer = WhitePlayersQueue.Dequeue();
-                var BlackPlayer = BlackPlayersQueue.Dequeue();
-                return new Player[] { WhitePlayer, BlackPlayer };
+                Rivals rivals = new Rivals();
+                rivals.WhitePlayer = WhitePlayersQueue.Dequeue();
+                rivals.BlackPlayer = BlackPlayersQueue.Dequeue();
+                return rivals;
             }
         }
+
         public bool Contains(Player player)
         {
             lock (_queueLockObj)

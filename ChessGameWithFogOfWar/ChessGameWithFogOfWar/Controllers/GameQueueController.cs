@@ -11,10 +11,13 @@ namespace ChessGameWithFogOfWar.Controllers
     [ApiController]
     public class GameQueueController : ControllerBase
     {
-       private readonly QueueProvider _queueProvider;
-        public GameQueueController(QueueProvider queueProveder)
+        private readonly QueueProvider _queueProvider;
+        private readonly GameProcessCotroller _gameProcessCotroller;
+        
+        public GameQueueController(QueueProvider queueProveder, GameProcessCotroller gameProcessCotroller)
         {
-            this._queueProvider = queueProveder;     
+            this._queueProvider = queueProveder;  
+            this._gameProcessCotroller = gameProcessCotroller;
         }
 
         // GET: api/<GameQueueController>
@@ -31,7 +34,7 @@ namespace ChessGameWithFogOfWar.Controllers
 
         //POST api/<GameQueueController>
         [HttpPost]
-        public IActionResult Post([FromBody] ReceivedPostData value)
+        public IActionResult Post( ReceivedPostData value)
         {
             //example "{\"player\":{\"name\":\"john\"},\"playersColor\":{\"color\":\"random\"}}"
             if (value == null)
@@ -42,6 +45,7 @@ namespace ChessGameWithFogOfWar.Controllers
             var addedPlayer = _queueProvider.Enqueue(value.Player, playersColor);
             if (_queueProvider.Contains(value.Player))
             {
+                Task.Run(() => { CheckIsRivalsКCompleted(); });
                 return new JsonResult(new ReceivedPostData (value.Player, playersColor));
             }
             return new BadRequestResult();
@@ -54,6 +58,29 @@ namespace ChessGameWithFogOfWar.Controllers
         {
           var response =  _queueProvider.DeletePlayerFromQueue(Id);
             return new JsonResult(response);
+        }
+
+        public async Task<bool> CheckIsRivalsКCompleted()
+        {
+            Player PotentialTrailor = null;
+            if (_queueProvider.CountWhite > 1 && _queueProvider.CountBlack == 0)
+            {
+                PotentialTrailor = _queueProvider.PeekedWhite;
+            }
+            if (_queueProvider.CountBlack > 1 && _queueProvider.CountWhite == 0)
+            {
+                PotentialTrailor = _queueProvider.PeekedBlack;
+            }
+            if (PotentialTrailor != null)
+            {
+                return false;
+            }
+            if (_queueProvider.CountWhite > 0 && _queueProvider.CountBlack > 0)
+            {
+               Rivals CompletedRivals = _queueProvider.Dequeue();
+               await _gameProcessCotroller.StartGame(CompletedRivals);
+            }
+            return true;
         }
     }
 }

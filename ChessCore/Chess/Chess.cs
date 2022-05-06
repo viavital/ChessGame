@@ -2,12 +2,14 @@
 {
     public class Chess
     {
+        public string GameId;
         public string Fen { get; private set; }
         Board Board;
         Moves Moves;
         List<FigureMoving> AllMoves;
-        public Chess (string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        public Chess (string GameId, string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") 
         {
+            this.GameId = GameId;
             Fen = fen;
             Board = new Board (fen);
             Moves = new Moves(Board);
