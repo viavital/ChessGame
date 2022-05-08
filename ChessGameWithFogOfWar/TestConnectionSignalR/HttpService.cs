@@ -31,7 +31,7 @@ namespace TestConnectionSignalR
             var response = await  responseForEnqueue.Content.ReadAsStringAsync();
             var clientsPlayerfromServer = JsonConvert.DeserializeObject<ReceivedPostData>(response);
             clientsPlayer.Player.id = clientsPlayerfromServer.Player.Id.ToString();
-            clientsPlayer.playersColor.Color = clientsPlayer.playersColor.Color;
+            clientsPlayer.playersColor.Color = clientsPlayerfromServer.playersColor.Color;
             return clientsPlayer;
         }
     }

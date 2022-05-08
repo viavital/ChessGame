@@ -10,7 +10,7 @@ namespace ChessGameWithFogOfWar.Hubs
         {
            await Clients.Caller.SendAsync("Notify",
                  JsonConvert.SerializeObject(new WelcomeMessage()
-                 { Id = Context.ConnectionId, Type = "welcome"})); // client should whiteConnectionId in Player model           
+                 { Type = "welcome", Id = Context.ConnectionId})); // client should whiteConnectionId in Player model           
            await base.OnConnectedAsync();
         }
     }
