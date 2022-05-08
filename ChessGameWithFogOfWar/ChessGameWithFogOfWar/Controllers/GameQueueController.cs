@@ -59,7 +59,7 @@ namespace ChessGameWithFogOfWar.Controllers
           var response =  _queueProvider.DeletePlayerFromQueue(Id);
             return new JsonResult(response);
         }
-
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<bool> CheckIsRivalsКCompleted()
         {
             Player PotentialTrailor = null;

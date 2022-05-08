@@ -8,10 +8,10 @@ namespace ChessGameWithFogOfWar.Hubs
     {
         public override async Task OnConnectedAsync()
         {
-            await Clients.User(Context.ConnectionId).SendAsync(
+           await Clients.Caller.SendAsync("Notify",
                  JsonConvert.SerializeObject(new WelcomeMessage()
                  { Id = Context.ConnectionId, Type = "welcome"})); // client should whiteConnectionId in Player model           
-            await base.OnConnectedAsync();
+           await base.OnConnectedAsync();
         }
     }
 }

@@ -1,3 +1,4 @@
+using ChessGameWithFogOfWar.Controllers;
 using ChessGameWithFogOfWar.Hubs;
 using ChessGameWithFogOfWar.Services;
 using Microsoft.AspNetCore.Authentication.Negotiate;
@@ -13,6 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllersWithViews();
+builder.Services.AddTransient<GameProcessCotroller>();
 builder.Services.AddSingleton<QueueProvider>();
 builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
@@ -35,7 +37,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.MapControllers();
 app.MapHub<GameProcessHub>("/GameProcessHub" , options =>
 {
@@ -45,8 +46,6 @@ app.Use(async (context, next) =>
 {
     var hubContext = context.RequestServices
                             .GetRequiredService<IHubContext<GameProcessHub>>();
-    //...
-
     if (next != null)
     {
         await next.Invoke();
