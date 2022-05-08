@@ -41,6 +41,22 @@ namespace TestConnectionSignalR
                                   $"your Id - {RegisteredPlayer.Player.id},\n" +
                                   $" your Connction id - {RegisteredPlayer.Player.IdConnection}.");
             });
+
+           // MoveByGameId moveByGameId = new MoveByGameId();
+           
+            //_hubConnection.On<string>("NewGameId", NewGameId => 
+            //                        { 
+            //                            moveByGameId.GameId = (NewGameId);
+            //                            Console.WriteLine("Game is staeted, game id - " + moveByGameId.GameId);
+            //                            _hubConnection.SendAsync("ClientReceivedGameId",
+            //                                                     JsonConvert.SerializeObject(new OnReceivingGameIDMessage() { PlayersId = RegisteredPlayer.Player.id, GameId = NewGameId }));
+            //                        });
+
+            //bool IsGameOver = false;
+            //while (!IsGameOver)
+            //{
+
+            //}
             await _hubConnection.StartAsync();
             
             Console.ReadLine();

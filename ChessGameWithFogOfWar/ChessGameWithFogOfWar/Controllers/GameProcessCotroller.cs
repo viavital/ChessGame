@@ -18,6 +18,7 @@ namespace ChessGameWithFogOfWar.Controllers
             _hubContext = hubContext;
             _chess = new List<Chess>();
         }
+        
         public async Task OnMove(string moveByGameId) // { "gameid" : "**********", "move" : "Pb2b4" }
         {
             MoveByGameId _moveByGameId = JsonConvert.DeserializeObject<MoveByGameId>(moveByGameId);
@@ -34,8 +35,9 @@ namespace ChessGameWithFogOfWar.Controllers
         public async Task StartGame (Rivals _rivals)
         {
             Chess chess = new Chess(_rivals.GameId);
-            await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(_rivals.GameId);
-            await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync(_rivals.GameId); 
+
+            await _hubContext.Clients.All.SendAsync("NewGameId", _rivals.GameId);
+            await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("NewGameId", _rivals.GameId); 
 
             while (true)
             {

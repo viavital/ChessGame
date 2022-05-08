@@ -78,7 +78,7 @@ namespace ChessGameWithFogOfWar.Controllers
             if (_queueProvider.CountWhite > 0 && _queueProvider.CountBlack > 0)
             {
                Rivals CompletedRivals = _queueProvider.Dequeue();
-               await _gameProcessCotroller.StartGame(CompletedRivals);
+               _gameProcessCotroller.StartGame(CompletedRivals);
             }
             return true;
         }
