@@ -1,4 +1,9 @@
 {
-  "ExpandedNodes": [],
+  "ExpandedNodes": [
+    "",
+    "\\ChessGameWithFogOfWar",
+    "\\ChessGameWithFogOfWar\\ChessGameWithFogOfWar"
+  ],
+  "SelectedNode": "\\ChessGameWithFogOfWar\\ChessGameWithFogOfWar.sln",
   "PreviewInSolutionExplorer": false
 }
