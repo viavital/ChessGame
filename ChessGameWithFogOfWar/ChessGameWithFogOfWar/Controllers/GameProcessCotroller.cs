@@ -36,23 +36,23 @@ namespace ChessGameWithFogOfWar.Controllers
         {
             Chess chess = new Chess(_rivals.GameId);
 
-            await _hubContext.Clients.All.SendAsync("NewGameId", _rivals.GameId);
+            await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("NewGameId", _rivals.GameId);
             await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("NewGameId", _rivals.GameId); 
 
             while (true)
             {
-                await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(chess.Fen); 
-                await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync(chess.Fen); 
+                await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("NewFen",chess.Fen); 
+                await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("NewFen",chess.Fen); 
 
                 foreach (var moves in chess.GetAllMoves())
                 {
                     if (chess.ReturnMoveColor() == Color.white)
                     {
-                        await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync(moves);
+                        await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("PossibleMoves",moves);
                     }
                     else
                     {
-                        await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync(moves);
+                        await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("PossibleMoves",moves);
                     }
                 }
                 await tcs.Task;

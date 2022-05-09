@@ -13,11 +13,17 @@ namespace ChessGameWithFogOfWar.Controllers
     {
         private readonly QueueProvider _queueProvider;
         private readonly GameProcessCotroller _gameProcessCotroller;
-        
-        public GameQueueController(QueueProvider queueProveder, GameProcessCotroller gameProcessCotroller)
+
+        public GameQueueController(QueueProvider queueProvider, GameProcessCotroller gameProcessCotroller)
         {
-            this._queueProvider = queueProveder;  
+            this._queueProvider = queueProvider;  
             this._gameProcessCotroller = gameProcessCotroller;
+            _queueProvider.RivalsCompletedEvent += OnRivalsCompleted;
+        }
+
+        private void OnRivalsCompleted(Rivals obj)
+        {
+            _gameProcessCotroller.StartGame(obj);
         }
 
         // GET: api/<GameQueueController>
@@ -45,12 +51,27 @@ namespace ChessGameWithFogOfWar.Controllers
             var addedPlayer = _queueProvider.Enqueue(value.Player, playersColor);
             if (_queueProvider.Contains(value.Player))
             {
-                Task.Run(() => { CheckIsRivalsКCompleted(); });
                 return new JsonResult(new ReceivedPostData (value.Player, playersColor));
             }
             return new BadRequestResult();
         }
-
+        //POST api/<GameQueueController>
+        [HttpPut]
+        public  IActionResult Put (UpdateIdConnectionMessage value)
+        {
+            if (value == null)
+            {
+                return new BadRequestResult();
+            }
+            Player UpdatedPlayer = _queueProvider.ReturnPlayer(value.PlayersId);
+            if (UpdatedPlayer == null)
+            {
+                return new BadRequestResult();
+            }
+            UpdatedPlayer.IdConnection = value.ConnectionId;
+            _queueProvider.CheckIsRivalsКCompleted();
+            return new OkResult();           
+        }
 
         // DELETE api/<GameQueueController>/
         [HttpDelete("{Id}")]
@@ -59,28 +80,6 @@ namespace ChessGameWithFogOfWar.Controllers
           var response =  _queueProvider.DeletePlayerFromQueue(Id);
             return new JsonResult(response);
         }
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public async Task<bool> CheckIsRivalsКCompleted()
-        {
-            Player PotentialTrailor = null;
-            if (_queueProvider.CountWhite > 1 && _queueProvider.CountBlack == 0)
-            {
-                PotentialTrailor = _queueProvider.PeekedWhite;
-            }
-            if (_queueProvider.CountBlack > 1 && _queueProvider.CountWhite == 0)
-            {
-                PotentialTrailor = _queueProvider.PeekedBlack;
-            }
-            if (PotentialTrailor != null)
-            {
-                return false;
-            }
-            if (_queueProvider.CountWhite > 0 && _queueProvider.CountBlack > 0)
-            {
-               Rivals CompletedRivals = _queueProvider.Dequeue();
-               _gameProcessCotroller.StartGame(CompletedRivals);
-            }
-            return true;
-        }
+
     }
 }

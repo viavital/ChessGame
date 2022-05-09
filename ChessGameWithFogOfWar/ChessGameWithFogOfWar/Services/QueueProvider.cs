@@ -8,6 +8,10 @@ namespace ChessGameWithFogOfWar.Services
 
         private Queue<Player> BlackPlayersQueue = new() ;
 
+        Rivals _rivals;
+
+        public event Action<Rivals> RivalsCompletedEvent;
+
         private readonly object _queueLockObj = new object();
 
         public Player Enqueue(Player player, ColorOfTeamEnum colorOfTeam)
@@ -31,6 +35,18 @@ namespace ChessGameWithFogOfWar.Services
                 rivals.WhitePlayer = WhitePlayersQueue.Dequeue();
                 rivals.BlackPlayer = BlackPlayersQueue.Dequeue();
                 return rivals;
+            }
+        }
+        public Player ReturnPlayer(string PlayersId)
+        {
+            lock (_queueLockObj)
+            {
+                Player player = WhitePlayersQueue.FirstOrDefault(p => p.Id.ToString() == PlayersId);
+                if (player == null)
+                {
+                    player = BlackPlayersQueue.FirstOrDefault(p => p.Id.ToString() == PlayersId);
+                }
+                return player;
             }
         }
 
@@ -58,8 +74,17 @@ namespace ChessGameWithFogOfWar.Services
                return "User was removed from queue before request";
 
             return $"User {user.Name} removed from queue";
-        }     
-
+        }
+        public async Task<bool> CheckIsRivalsКCompleted()
+        {
+                if (CountWhite > 0 && CountBlack > 0)
+                {
+                    _rivals = Dequeue();
+                    RivalsCompletedEvent(_rivals);
+                    return true;
+                }
+                return false;
+        }
         public int CountWhite => WhitePlayersQueue.Count;
         public int CountBlack => BlackPlayersQueue.Count;
 

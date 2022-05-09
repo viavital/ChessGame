@@ -34,5 +34,7 @@ namespace TestConnectionSignalR
             clientsPlayer.playersColor.Color = clientsPlayerfromServer.playersColor.Color;
             return clientsPlayer;
         }
+
+
     }
 }

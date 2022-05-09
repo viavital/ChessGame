@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using System;
+using System.Text;
 
 namespace TestConnectionSignalR
 {
     class Program
     {
         static HubConnection _hubConnection;
+        static TaskCompletionSource taskCompletionSource = new TaskCompletionSource();
         static async  Task Main(string[] args)
         {
             Console.WriteLine("Enter your name:");
@@ -28,38 +30,54 @@ namespace TestConnectionSignalR
             Console.Read();
             HttpService httpService = new HttpService();
             var RegisteredPlayer = await httpService.ConnectToGameServer(EnteredName, EnteredColor);
-            Console.WriteLine("Enter any string to connect socket:");
-            Console.ReadLine();
-            
+
+
             _hubConnection = new HubConnectionBuilder().WithUrl("http://localhost:5069/GameProcessHub").Build();
-            _hubConnection.On<string>("Notify", mess => 
+
+            _hubConnection.On<string>("FirstConnectionSocket", async mess =>
             {
-                Console.WriteLine(mess); 
+                Console.WriteLine(mess);
                 RegisteredPlayer.Player.IdConnection = JsonConvert.DeserializeObject<WelcomeMessage>(mess).Id;
                 Console.WriteLine($"Your Player - {RegisteredPlayer.Player.Name}, " +
                                   $"your colour - {RegisteredPlayer.playersColor.Color},\n " +
                                   $"your Id - {RegisteredPlayer.Player.id},\n" +
                                   $" your Connction id - {RegisteredPlayer.Player.IdConnection}.");
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    UpdateIdConnectionMessage updateIdConnectionMessage = new UpdateIdConnectionMessage()
+                    {
+                        PlayersId = RegisteredPlayer.Player.id,
+                        ConnectionId = RegisteredPlayer.Player.IdConnection
+                    };
+
+                    HttpContent content = new StringContent(JsonConvert.SerializeObject(updateIdConnectionMessage), Encoding.UTF8, "application/json");
+                    var responce = await httpClient.PutAsync("http://localhost:5069/api/GameQueue", content);
+                }
+            });
+            MoveByGameId moveByGameId = new MoveByGameId();
+            _hubConnection.On<string>("NewGameId", NewGameId =>
+            {
+                moveByGameId.GameId = NewGameId;
+                Console.WriteLine("Game is started, game id - " + moveByGameId.GameId);
+                _hubConnection.SendAsync("ClientReceivedGameId",
+                                         JsonConvert.SerializeObject(new OnReceivingGameIDMessage() { PlayersId = RegisteredPlayer.Player.id, GameId = NewGameId }));
+            });
+            _hubConnection.On<string>("NewFen", Fen =>
+            {
+                Console.WriteLine(Fen);
+                Console.WriteLine("");
+                Console.WriteLine("Enter your Move or \"exit\" to exit");
+                moveByGameId.Move = Console.ReadLine();
+                _hubConnection.SendAsync("OnMove", JsonConvert.SerializeObject(moveByGameId));
             });
 
-           // MoveByGameId moveByGameId = new MoveByGameId();
-           
-            //_hubConnection.On<string>("NewGameId", NewGameId => 
-            //                        { 
-            //                            moveByGameId.GameId = (NewGameId);
-            //                            Console.WriteLine("Game is staeted, game id - " + moveByGameId.GameId);
-            //                            _hubConnection.SendAsync("ClientReceivedGameId",
-            //                                                     JsonConvert.SerializeObject(new OnReceivingGameIDMessage() { PlayersId = RegisteredPlayer.Player.id, GameId = NewGameId }));
-            //                        });
-
-            //bool IsGameOver = false;
-            //while (!IsGameOver)
-            //{
-
-            //}
-            await _hubConnection.StartAsync();
-            
-            Console.ReadLine();
+            _hubConnection.StartAsync();
+            bool IsGameOver = false;
+            string message = null;
+            while (!IsGameOver)
+            {
+                await taskCompletionSource.Task;
+            }
         }
     }
 }
