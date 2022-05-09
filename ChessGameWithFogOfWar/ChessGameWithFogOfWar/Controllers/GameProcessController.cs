@@ -1,27 +1,31 @@
 ﻿using ChessCore;
 using ChessGameWithFogOfWar.Hubs;
 using ChessGameWithFogOfWar.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 
 namespace ChessGameWithFogOfWar.Controllers
 {
-    public class GameProcessCotroller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class GameProcessController: ControllerBase
     {
         private readonly IHubContext<GameProcessHub> _hubContext;
 
         private List<Chess> _chess;
         TaskCompletionSource tcs = new TaskCompletionSource();
 
-        public GameProcessCotroller(IHubContext<GameProcessHub> hubContext)
+        public GameProcessController(IHubContext<GameProcessHub> hubContext)
         {
             _hubContext = hubContext;
             _chess = new List<Chess>();
         }
-        
-        public async Task OnMove(string moveByGameId) // { "gameid" : "**********", "move" : "Pb2b4" }
+
+        [HttpPost]
+        public async Task Post (MoveByGameId _moveByGameId) // { "gameid" : "**********", "move" : "Pb2b4" }
         {
-            MoveByGameId _moveByGameId = JsonConvert.DeserializeObject<MoveByGameId>(moveByGameId);
+           // MoveByGameId _moveByGameId = JsonConvert.DeserializeObject<MoveByGameId>(moveByGameId);
 
             if (_moveByGameId.Move == "" || _moveByGameId.Move == null)
                 return;
@@ -29,18 +33,22 @@ namespace ChessGameWithFogOfWar.Controllers
             if (requiredChess == null)
                 return;
 
-            await Task.Run(() => {requiredChess = requiredChess.Move(_moveByGameId.Move); });
+            requiredChess = requiredChess.Move(_moveByGameId.Move);
             tcs.TrySetResult();
         }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task StartGame (Rivals _rivals)
         {
             Chess chess = new Chess(_rivals.GameId);
+            _chess.Add(chess);
 
             await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("NewGameId", _rivals.GameId);
             await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("NewGameId", _rivals.GameId); 
 
             while (true)
             {
+                tcs = new TaskCompletionSource();
                 await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("NewFen",chess.Fen); 
                 await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("NewFen",chess.Fen); 
 

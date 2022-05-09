@@ -10,6 +10,7 @@ namespace TestConnectionSignalR
     {
         static HubConnection _hubConnection;
         static TaskCompletionSource taskCompletionSource = new TaskCompletionSource();
+        static bool IsGameOver = false;
         static async  Task Main(string[] args)
         {
             Console.WriteLine("Enter your name:");
@@ -55,25 +56,36 @@ namespace TestConnectionSignalR
                 }
             });
             MoveByGameId moveByGameId = new MoveByGameId();
+
             _hubConnection.On<string>("NewGameId", NewGameId =>
             {
                 moveByGameId.GameId = NewGameId;
                 Console.WriteLine("Game is started, game id - " + moveByGameId.GameId);
-                _hubConnection.SendAsync("ClientReceivedGameId",
-                                         JsonConvert.SerializeObject(new OnReceivingGameIDMessage() { PlayersId = RegisteredPlayer.Player.id, GameId = NewGameId }));
+                //_hubConnection.SendAsync("ClientReceivedGameId",
+                //                         JsonConvert.SerializeObject(new OnReceivingGameIDMessage() { PlayersId = RegisteredPlayer.Player.id, GameId = NewGameId }));
             });
-            _hubConnection.On<string>("NewFen", Fen =>
+
+            
+            _hubConnection.On<string>("NewFen", async Fen =>
             {
                 Console.WriteLine(Fen);
-                Console.WriteLine("");
                 Console.WriteLine("Enter your Move or \"exit\" to exit");
                 moveByGameId.Move = Console.ReadLine();
-                _hubConnection.SendAsync("OnMove", JsonConvert.SerializeObject(moveByGameId));
+                if (moveByGameId.Move == "exit")
+                {
+                    taskCompletionSource.TrySetResult();
+                    IsGameOver = true;
+                }
+                using (HttpClient httpClient = new HttpClient())
+                {
+                    HttpContent content = new StringContent(JsonConvert.SerializeObject(moveByGameId), Encoding.UTF8, "application/json");
+                    await httpClient.PostAsync("http://localhost:5069/api/GameProcess", content);
+                }
+                //_hubConnection.SendAsync("OnMove", JsonConvert.SerializeObject(moveByGameId));
             });
 
             _hubConnection.StartAsync();
-            bool IsGameOver = false;
-            string message = null;
+            
             while (!IsGameOver)
             {
                 await taskCompletionSource.Task;

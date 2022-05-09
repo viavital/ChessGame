@@ -12,9 +12,9 @@ namespace ChessGameWithFogOfWar.Controllers
     public class GameQueueController : ControllerBase
     {
         private readonly QueueProvider _queueProvider;
-        private readonly GameProcessCotroller _gameProcessCotroller;
+        private readonly GameProcessController _gameProcessCotroller;
 
-        public GameQueueController(QueueProvider queueProvider, GameProcessCotroller gameProcessCotroller)
+        public GameQueueController(QueueProvider queueProvider, GameProcessController gameProcessCotroller)
         {
             this._queueProvider = queueProvider;  
             this._gameProcessCotroller = gameProcessCotroller;
