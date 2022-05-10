@@ -21,17 +21,7 @@
         align-items: strech;
     }
 
-    .side{
-        display: grid;
-        
-    }
-
-    .wrapper-side {
-        display: grid;
-        background-color: blue;
-        grid-auto-flow: r;
-        
-    }
+    
 
     .box {
         padding: 20px;
@@ -78,4 +68,15 @@
         background-color: #441a03;
         color: #fff;
     }
+}
+.side{
+    display: grid;
+    
+}
+
+.wrapper-side {
+    display: grid;
+    background-color: blue;
+    grid-auto-flow: r;
+    
 }
