@@ -52,19 +52,20 @@ namespace ChessGameWithFogOfWar.Controllers
                 await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("NewFen",chess.Fen); 
                 await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("NewFen",chess.Fen); 
 
-                foreach (var moves in chess.GetAllMoves())
-                {
-                    if (chess.ReturnMoveColor() == Color.white)
-                    {
-                        await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("PossibleMoves",moves);
-                    }
-                    else
-                    {
-                        await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("PossibleMoves",moves);
-                    }
-                }
-                await tcs.Task;
-            }           
+                //foreach (var moves in chess.GetAllMoves())
+                //{
+                //    if (chess.ReturnMoveColor() == Color.white)
+                //    {
+                //        await _hubContext.Clients.Client(_rivals.WhitePlayer.IdConnection).SendAsync("PossibleMoves",moves);
+                //    }
+                //    else
+                //    {
+                //        await _hubContext.Clients.Client(_rivals.BlackPlayer.IdConnection).SendAsync("PossibleMoves",moves);
+                //    }
+                //}
+               await tcs.Task;
+            }
+            await _hubContext.Clients.All.SendAsync("WTF?");
         }
     }
 }

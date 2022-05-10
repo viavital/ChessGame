@@ -17,8 +17,7 @@ namespace ChessGameWithFogOfWar.Controllers
         public GameQueueController(QueueProvider queueProvider, GameProcessController gameProcessCotroller)
         {
             this._queueProvider = queueProvider;  
-            this._gameProcessCotroller = gameProcessCotroller;
-            _queueProvider.RivalsCompletedEvent += OnRivalsCompleted;
+            this._gameProcessCotroller = gameProcessCotroller;            
         }
 
         private void OnRivalsCompleted(Rivals obj)
@@ -69,7 +68,9 @@ namespace ChessGameWithFogOfWar.Controllers
                 return new BadRequestResult();
             }
             UpdatedPlayer.IdConnection = value.ConnectionId;
+            _queueProvider.RivalsCompletedEvent += OnRivalsCompleted;
             _queueProvider.CheckIsRivalsКCompleted();
+            _queueProvider.RivalsCompletedEvent -= OnRivalsCompleted;
             return new OkResult();           
         }
 

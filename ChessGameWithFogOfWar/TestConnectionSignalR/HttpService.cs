@@ -11,13 +11,6 @@ namespace TestConnectionSignalR
     internal class HttpService
     {
 
-        HttpClient HttpClient { get; set; }
-
-        public HttpService()
-        {
-            this.HttpClient = new HttpClient();
-        }
-
         public async Task<ClientsPlayer> ConnectToGameServer(string playersName, string colorOfFigures)
         {
            ClientsPlayer clientsPlayer = new ClientsPlayer();
@@ -27,11 +20,16 @@ namespace TestConnectionSignalR
             string TargetUrl = "http://localhost:5069/api/GameQueue";
             string newPlayer = JsonConvert.SerializeObject(clientsPlayer);
             HttpContent httpContent = new StringContent(newPlayer, Encoding.UTF8, "application/json");
-            var responseForEnqueue = await HttpClient.PostAsync(TargetUrl, httpContent);
-            var response = await  responseForEnqueue.Content.ReadAsStringAsync();
-            var clientsPlayerfromServer = JsonConvert.DeserializeObject<ReceivedPostData>(response);
-            clientsPlayer.Player.id = clientsPlayerfromServer.Player.Id.ToString();
-            clientsPlayer.playersColor.Color = clientsPlayerfromServer.playersColor.Color;
+
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var responseForEnqueue = await httpClient.PostAsync(TargetUrl, httpContent);
+                var response = await responseForEnqueue.Content.ReadAsStringAsync();
+                var clientsPlayerfromServer = JsonConvert.DeserializeObject<ReceivedPostData>(response);
+                clientsPlayer.Player.id = clientsPlayerfromServer.Player.Id.ToString();
+                clientsPlayer.playersColor.Color = clientsPlayerfromServer.playersColor.Color;
+            }         
+           
             return clientsPlayer;
         }
 
