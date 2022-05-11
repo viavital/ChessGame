@@ -24,8 +24,10 @@ namespace ChessGameWithFogOfWar.Hubs
             var requiredChess = QueueProvider._chess.FirstOrDefault(c => c.GameId == moveByGameId.GameId);
             if (requiredChess == null)
                 return;
-
+            var indexOfChess = QueueProvider._chess.IndexOf(requiredChess);
             requiredChess = requiredChess.Move(moveByGameId.Move);
+            
+            QueueProvider._chess[indexOfChess] = requiredChess;
             await Clients.Client(requiredChess.WhitePlayerId).SendAsync("NewFen", requiredChess.Fen);
             await Clients.Client(requiredChess.BlackPlayerId).SendAsync("NewFen", requiredChess.Fen);
             foreach (var moves in requiredChess.GetAllMoves())
