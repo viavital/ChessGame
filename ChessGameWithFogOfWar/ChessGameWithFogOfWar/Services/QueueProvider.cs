@@ -1,4 +1,5 @@
-﻿using ChessGameWithFogOfWar.Model;
+﻿using ChessCore;
+using ChessGameWithFogOfWar.Model;
 
 namespace ChessGameWithFogOfWar.Services
 {
@@ -9,6 +10,8 @@ namespace ChessGameWithFogOfWar.Services
         private Queue<Player> BlackPlayersQueue = new() ;
 
         Rivals _rivals;
+
+        static public List<Chess> _chess = new List<Chess>();
 
         public event Action<Rivals> RivalsCompletedEvent;
 

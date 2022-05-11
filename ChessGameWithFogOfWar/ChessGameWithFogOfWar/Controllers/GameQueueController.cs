@@ -39,7 +39,7 @@ namespace ChessGameWithFogOfWar.Controllers
 
         //POST api/<GameQueueController>
         [HttpPost]
-        public IActionResult Post( ReceivedPostData value)
+        public IActionResult Post(ReceivedPostData value)
         {
             //example "{\"player\":{\"name\":\"john\"},\"playersColor\":{\"color\":\"random\"}}"
             if (value == null)
@@ -54,7 +54,7 @@ namespace ChessGameWithFogOfWar.Controllers
             }
             return new BadRequestResult();
         }
-        //POST api/<GameQueueController>
+        //PUT api/<GameQueueController>
         [HttpPut]
         public  IActionResult Put (UpdateIdConnectionMessage value)
         {

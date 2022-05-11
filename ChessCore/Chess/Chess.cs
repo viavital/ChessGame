@@ -3,20 +3,27 @@
     public class Chess
     {
         public string GameId;
+        public string WhitePlayerId;
+        public string BlackPlayerId;
         public string Fen { get; private set; }
         Board Board;
         Moves Moves;
         List<FigureMoving> AllMoves;
-        public Chess (string GameId, string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") 
+        public Chess (string GameId,string WhitePlayerId, string BlackPlayerId, string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") 
         {
+            this.WhitePlayerId = WhitePlayerId;
+            this.BlackPlayerId = BlackPlayerId;
             this.GameId = GameId;
             Fen = fen;
             Board = new Board (fen);
             Moves = new Moves(Board);
             FindAllMoves ();
         }
-        Chess(Board board)
+        Chess(Board board, string GameId, string WhitePlayerId, string BlackPlayerId)
         {
+            this.GameId=GameId;
+            this.WhitePlayerId = WhitePlayerId;
+            this.BlackPlayerId = BlackPlayerId;
             Board = board;
             this.Fen = board.Fen;
             Moves = new Moves(Board);
@@ -29,7 +36,7 @@
                 return this;
             }
             Board nextBoard = Board.Move(figureMoving);
-            Chess nextChess = new Chess (nextBoard);            
+            Chess nextChess = new Chess (nextBoard, this.GameId, this.WhitePlayerId, this.BlackPlayerId);            
             return nextChess;
         }  
         public char GetFigureAt(int x, int y)

@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Newtonsoft.Json;
 
 namespace ChessGameWithFogOfWar.Model
 {
     public class ReceivedPostData
     {
-        public ReceivedPostData(Player player,  ColorOfTeamEnum colorOfTeam)
+        public ReceivedPostData(Player player, ColorOfTeamEnum colorOfTeam)
         {
             this.Player = player;
             this.playersColor = new PlayersColor() { Color = colorOfTeam.ToString() };
@@ -15,7 +14,7 @@ namespace ChessGameWithFogOfWar.Model
         {
 
         }
-        [JsonProperty ("player")]
+        [JsonProperty("player")]
         public Player Player { get; set; }
 
         [JsonProperty("playersColor")]
@@ -42,20 +41,20 @@ namespace ChessGameWithFogOfWar.Model
 
         public ColorOfTeamEnum ReturnColorEnum()
         {
-            if (Color == "White" || Color == "white" )
+            if (Color == "White" || Color == "white")
             {
                 return ColorOfTeamEnum.White;
             }
             else if (Color == "random")
             {
-                    Random random = new Random();
-                    var randomColorOfTeam = random.Next(0, 1);
-                    if (randomColorOfTeam == 0)
-                    {
-                        return ColorOfTeamEnum.White;
-                    }
-                    else
-                        return ColorOfTeamEnum.Black;
+                Random random = new Random();
+                var randomColorOfTeam = random.Next(0, 1);
+                if (randomColorOfTeam == 0)
+                {
+                    return ColorOfTeamEnum.White;
+                }
+                else
+                    return ColorOfTeamEnum.Black;
             }
             return ColorOfTeamEnum.Black;
         }

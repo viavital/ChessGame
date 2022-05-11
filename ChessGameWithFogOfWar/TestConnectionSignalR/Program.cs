@@ -72,6 +72,10 @@ namespace TestConnectionSignalR
                 Console.WriteLine(Fen);
                 Console.WriteLine("Enter your Move or \"exit\" to exit");                 
             });
+            _hubConnection.On<string>("PossibleMoves", async possibleMove =>
+            {
+                Console.Write(possibleMove + "  ");
+            });
 
             await _hubConnection.StartAsync();
             
@@ -82,12 +86,17 @@ namespace TestConnectionSignalR
                 {
                     IsGameOver = true;
                 }
-                using (HttpClient httpClient = new HttpClient())
+                if (moveByGameId.Move != "" && moveByGameId.Move != null)
                 {
-                    HttpContent content = new StringContent(JsonConvert.SerializeObject(moveByGameId), Encoding.UTF8, "application/json");
-                    httpClient.PostAsync("http://localhost:5069/api/GameProcess", content);
+                    await _hubConnection.SendAsync("OnMove", JsonConvert.SerializeObject(moveByGameId));
                 }
+                //using (HttpClient httpClient = new HttpClient())
+                //{
+                //    HttpContent content = new StringContent(JsonConvert.SerializeObject(moveByGameId), Encoding.UTF8, "application/json");
+                //    httpClient.PostAsync("http://localhost:5069/api/GameProcess", content);
+                //}
             }
         }
+
     }
 }
